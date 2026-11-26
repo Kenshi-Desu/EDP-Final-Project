@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05070a">
+  <title>Project Room // EDP Signal</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Bahnschrift", "Arial Narrow", "Segoe UI", sans-serif;
+      color: #e7ece8;
+      background: #05070a;
+      font-synthesis: none;
+      --panel: #11181c;
+      --panel-raised: #151e22;
+      --line: #29373b;
+      --muted: #91a2a3;
+      --text: #e7ece8;
+      --acid: #168cff;
+      --cyan: #168cff;
+      --danger: #ff746b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-image:
+        linear-gradient(#ffffff08 1px, transparent 1px),
+        linear-gradient(90deg, #ffffff08 1px, transparent 1px),
+        radial-gradient(ellipse at 75% -10%, #124a8740, transparent 42rem);
+      background-size: 32px 32px, 32px 32px, auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: #0c1215eF;
+    }
+
+    .topbar,
+    main {
+      width: min(100% - 3rem, 1180px);
+      margin: 0 auto;
+    }
+
+    .topbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-right: auto;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--acid);
+      color: var(--acid);
+      font-family: Consolas, monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      transform: skew(-7deg);
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 0.15rem;
+    }
+
+    .brand-copy strong {
+      color: var(--text);
+      font-family: Consolas, monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.11em;
+    }
+
+    .brand-copy small,
+    .topbar-meta,
+    .connection,
+    .eyebrow,
+    .heading-stamp,
+    .panel-index,
+    .field-note,
+    .post-time,
+    .post-count,
+    .stream-empty {
+      font-family: Consolas, "Courier New", monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-copy small {
+      color: var(--muted);
+      font-size: 0.62rem;
+    }
+
+    .topbar-meta {
+      display: grid;
+      gap: 0.2rem;
+      color: var(--muted);
+      font-size: 0.61rem;
+    }
+
+    .topbar-meta strong {
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .connection {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.68rem;
+      white-space: nowrap;
+    }
+
+    .connection::before,
+    .stamp-light {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #778283;
+      content: "";
+    }
+
+    .connection[data-state="online"]::before,
+    .stamp-light {
+      background: var(--acid);
+      box-shadow: 0 0 11px #168cff90;
+    }
+
+    .connection[data-state="offline"]::before {
+      background: var(--danger);
+      box-shadow: 0 0 10px #ff746b80;
+    }
+
+    main {
+      padding: 3.5rem 0 5rem;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 2.4rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.8rem;
+      color: var(--cyan);
+      font-size: 0.67rem;
+    }
+
+    .eyebrow span {
+      padding: 0 0.35rem;
+      color: var(--muted);
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0.55rem;
+      color: var(--text);
+      font-size: clamp(2.6rem, 6vw, 4.6rem);
+      font-weight: 800;
+      letter-spacing: -0.07em;
+      line-height: 0.95;
+    }
+
+    .title-slash {
+      color: var(--acid);
+    }
+
+    .page-description {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .heading-stamp {
+      min-width: 150px;
+      display: grid;
+      grid-template-columns: 10px 1fr;
+      align-items: center;
+      gap: 0.35rem 0.65rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--line);
+      color: var(--acid);
+      font-size: 0.7rem;
+    }
+
+    .heading-stamp small {
+      grid-column: 2;
+      color: var(--muted);
+      font-size: 0.57rem;
+    }
+
+    .stamp-light {
+      grid-row: 1 / span 2;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(270px, 0.78fr) minmax(0, 1.5fr);
+      align-items: start;
+      gap: 1.2rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: #0f1518f2;
+    }
+
+    .composer {
+      position: sticky;
+      top: 1rem;
+      padding: 1.25rem;
+    }
+
+    .panel-topline {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--line);
+      color: var(--cyan);
+      font-family: Consolas, monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.1em;
+    }
+
+    .panel-index {
+      color: var(--acid);
+    }
+
+    .composer h2 {
+      margin: 1rem 0 1.3rem;
+      font-size: 1.15rem;
+      letter-spacing: 0.01em;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 0.45rem;
+      color: #bdc9c4;
+      font-family: Consolas, monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      margin-bottom: 1.05rem;
+      padding: 0.8rem 0.85rem;
+      border: 1px solid #354448;
+      border-radius: 0;
+      outline: none;
+      color: var(--text);
+      background: #090e10;
+      font: inherit;
+      font-size: 0.9rem;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #718080;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px #168cff26;
+    }
+
+    textarea {
+      min-height: 145px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .field-note {
+      margin: -0.65rem 0 1rem;
+      color: #718080;
+      font-size: 0.58rem;
+      line-height: 1.5;
+    }
+
+    .file-picker {
+      min-width: 0;
+      margin-bottom: 0.55rem;
+      padding: 0.55rem;
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 0.65rem;
+    }
+
+    .file-picker::file-selector-button {
+      margin-right: 0.55rem;
+      padding: 0.45rem 0.55rem;
+      border: 1px solid var(--acid);
+      border-radius: 0;
+      color: var(--acid);
+      background: transparent;
+      font: inherit;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .file-picker::file-selector-button:hover {
+      color: #05070a;
+      background: var(--acid);
+    }
+
+    .image-preview,
+    .post-images {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+
+    .image-preview {
+      margin: 0 0 1rem;
+    }
+
+    .preview-tile {
+      position: relative;
+      min-width: 0;
+      aspect-ratio: 1;
+      border: 1px solid var(--line);
+      background: #070a0d;
+    }
+
+    .preview-image {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    button.remove-image {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid #ffffff50;
+      color: white;
+      background: #05070ae8;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    button.remove-image:hover:not(:disabled) {
+      color: #05070a;
+      background: var(--cyan);
+    }
+
+    button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--acid);
+      border-radius: 0;
+      color: #05070a;
+      background: var(--acid);
+      font-family: Consolas, monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 140ms ease, color 140ms ease;
+    }
+
+    button:hover:not(:disabled) {
+      color: var(--acid);
+      background: transparent;
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.55;
+    }
+
+    .button-arrow {
+      font-size: 1rem;
+    }
+
+    .feedback {
+      min-height: 1rem;
+      margin: 0.8rem 0 0;
+      font-family: Consolas, monospace;
+      font-size: 0.7rem;
+    }
+
+    .feedback.is-error {
+      color: var(--danger);
+    }
+
+    .feedback.is-success {
+      color: var(--acid);
+    }
+
+    .stream {
+      min-width: 0;
+      padding: 1.25rem;
+    }
+
+    .stream-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stream-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .stream-title::before {
+      width: 3px;
+      height: 18px;
+      background: var(--acid);
+      content: "";
+    }
+
+    .post-count {
+      color: var(--muted);
+      font-size: 0.62rem;
+      white-space: nowrap;
+    }
+
+    #posts {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .post {
+      position: relative;
+      min-width: 0;
+      padding: 1rem 1.05rem;
+      border: 1px solid var(--line);
+      border-left: 2px solid #1672be;
+      background: var(--panel);
+      animation: post-arrive 220ms ease-out both;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .post-author {
+      margin: 0;
+      color: var(--cyan);
+      font-family: Consolas, monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .post-time {
+      margin: 0;
+      color: #829393;
+      font-size: 0.57rem;
+      text-align: right;
+    }
+
+    .post-content {
+      margin: 0;
+      color: #d6dfda;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .post-images {
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      margin-top: 0.9rem;
+    }
+
+    .post-image {
+      width: 100%;
+      max-height: 300px;
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--line);
+      background: #05070a;
+      object-fit: contain;
+    }
+
+    .stream-empty {
+      margin: 1rem 0 0;
+      padding: 2.5rem 1rem;
+      border: 1px dashed #354448;
+      color: #829393;
+      font-size: 0.65rem;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    @keyframes post-arrive {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar,
+      main {
+        width: min(100% - 2rem, 620px);
+      }
+
+      main {
+        padding-top: 2.5rem;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .composer {
+        position: static;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        min-height: 64px;
+        gap: 0.8rem;
+      }
+
+      .topbar-meta {
+        display: none;
+      }
+
+      .connection {
+        max-width: 135px;
+        font-size: 0.57rem;
+        white-space: normal;
+      }
+
+      .page-heading {
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .heading-stamp {
+        min-width: auto;
+        padding: 0.65rem;
+      }
+
+      .heading-stamp small {
+        display: none;
+      }
+
+      .stamp-light {
+        grid-row: auto;
+      }
+
+      .stream {
+        padding: 1rem;
+      }
+
+      .post-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+
+      .post-time {
+        text-align: left;
+      }
+    }
+
+    .project-heading {
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-heading h1 {
+      margin: 0 0 0.45rem;
+      font-size: clamp(1.8rem, 4vw, 2.7rem);
+      letter-spacing: -0.04em;
+    }
+
+    .project-heading .page-description {
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .workspace {
+      grid-template-columns: minmax(245px, 0.68fr) minmax(0, 1.8fr);
+      gap: 1rem;
+    }
+
+    .sidebar {
+      display: grid;
+      align-content: start;
+      gap: 0.8rem;
+    }
+
+    .side-panel {
+      min-width: 0;
+      padding: 1rem;
+    }
+
+    .side-heading,
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .side-heading h2,
+    .section-heading h2 {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .side-heading small,
+    .section-heading small {
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .side-panel label {
+      margin-bottom: 0.3rem;
+      font-size: 0.6rem;
+    }
+
+    .side-panel input,
+    .side-panel textarea {
+      margin-bottom: 0.65rem;
+      padding: 0.58rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    .side-panel textarea {
+      min-height: 58px;
+      resize: vertical;
+    }
+
+    .side-panel button,
+    .channel-create-form button,
+    .task-form button {
+      min-height: 34px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.62rem;
+    }
+
+    .profile-badge {
+      margin: 0 0 0.75rem;
+      color: var(--muted);
+      font-size: 0.68rem;
+      line-height: 1.5;
+    }
+
+    .profile-badge strong {
+      color: var(--cyan);
+    }
+
+    .task-form {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .task-form input {
+      margin: 0;
+    }
+
+    .task-list,
+    .member-list {
+      display: grid;
+      gap: 0.45rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task-list {
+      margin-top: 0.8rem;
+    }
+
+    .task-item {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      align-items: start;
+      gap: 0.55rem;
+      padding: 0.55rem;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .task-toggle {
+      width: 16px;
+      height: 16px;
+      margin: 2px 0 0;
+      accent-color: var(--acid);
+    }
+
+    .task-copy {
+      min-width: 0;
+    }
+
+    .task-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 0.72rem;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .task-meta {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 0.56rem;
+      line-height: 1.4;
+    }
+
+    .task-item.is-complete .task-title {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .member-item {
+      display: grid;
+      grid-template-columns: 8px minmax(0, 1fr);
+      gap: 0.55rem;
+      align-items: start;
+      padding: 0.35rem 0;
+    }
+
+    .member-dot {
+      width: 7px;
+      height: 7px;
+      margin-top: 0.25rem;
+      border-radius: 50%;
+      background: var(--acid);
+      box-shadow: 0 0 7px #168cff80;
+    }
+
+    .member-name {
+      margin: 0;
+      color: var(--text);
+      font-size: 0.7rem;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .member-details {
+      margin: 0.18rem 0 0;
+      color: var(--muted);
+      font-size: 0.62rem;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .empty-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.65rem;
+      line-height: 1.5;
+    }
+
+    .room {
+      min-width: 0;
+    }
+
+    .stream {
+      padding: 1rem;
+    }
+
+    .channel-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .channel-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    button.channel-button,
+    button.small-button,
+    button.reply-button {
+      width: auto;
+      min-height: 32px;
+      justify-content: center;
+      padding: 0.45rem 0.65rem;
+      border-color: var(--line);
+      color: var(--muted);
+      background: transparent;
+      font-size: 0.62rem;
+    }
+
+    button.channel-button:hover:not(:disabled),
+    button.small-button:hover:not(:disabled),
+    button.reply-button:hover:not(:disabled) {
+      border-color: var(--acid);
+      color: var(--acid);
+      background: #168cff12;
+    }
+
+    button.channel-button.is-active {
+      border-color: var(--acid);
+      color: var(--acid);
+      background: #168cff16;
+    }
+
+    .channel-create-form {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .channel-create-form input {
+      width: 120px;
+      margin: 0;
+      padding: 0.5rem 0.6rem;
+      font-size: 0.7rem;
+    }
+
+    .stream-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      margin: 0.9rem 0 0;
+    }
+
+    .stream-heading .stream-title {
+      font-size: 0.92rem;
+    }
+
+    .stream-heading .post-count {
+      font-size: 0.58rem;
+    }
+
+    #posts {
+      max-height: 58vh;
+      min-height: 150px;
+      overflow-y: auto;
+      padding-right: 0.2rem;
+    }
+
+    .post {
+      padding: 0.8rem;
+    }
+
+    .post-details {
+      margin: -0.35rem 0 0.65rem;
+      color: var(--muted);
+      font-size: 0.62rem;
+    }
+
+    .reply-preview {
+      margin: 0 0 0.6rem;
+      padding: 0.45rem 0.6rem;
+      border-left: 2px solid var(--acid);
+      color: var(--muted);
+      background: #168cff0d;
+      font-size: 0.68rem;
+      line-height: 1.4;
+    }
+
+    .reply-preview strong {
+      color: var(--cyan);
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.55rem;
+    }
+
+    .composer {
+      position: static;
+      margin-top: 0.8rem;
+      padding: 1rem;
+    }
+
+    .composer .panel-topline {
+      margin-bottom: 0.75rem;
+    }
+
+    .composer textarea {
+      min-height: 88px;
+      margin-bottom: 0.5rem;
+    }
+
+    .composer .field-note {
+      margin: 0 0 0.65rem;
+    }
+
+    .composer-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .composer-actions button {
+      width: auto;
+      min-width: 145px;
+    }
+
+    .composer-actions .file-picker {
+      width: 100%;
+      margin: 0;
+    }
+
+    .reply-context {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+      padding: 0.55rem 0.7rem;
+      border-left: 2px solid var(--acid);
+      color: var(--muted);
+      background: #168cff0d;
+      font-size: 0.68rem;
+    }
+
+    .reply-context[hidden] {
+      display: none;
+    }
+
+    button.cancel-reply {
+      width: auto;
+      min-height: auto;
+      padding: 0.2rem;
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      font-size: 0.85rem;
+    }
+
+    button.cancel-reply:hover:not(:disabled) {
+      color: var(--acid);
+      background: transparent;
+    }
+
+    @media (max-width: 760px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .side-panel:first-child {
+        grid-row: span 2;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .sidebar {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel:first-child {
+        grid-row: auto;
+      }
+
+      .composer-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .composer-actions button {
+        width: 100%;
+      }
+
+      .channel-create-form input {
+        width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">/</span>
+        <span class="brand-copy">
+          <strong>EDP // PROJECT ROOM</strong>
+          <small>Shared team workspace</small>
+        </span>
+      </div>
+      <div class="topbar-meta">
+        <span>Workspace status</span>
+        <strong>ONE SHARED PROJECT</strong>
+      </div>
+      <p id="connection" class="connection" data-state="connecting" role="status">Connecting to workspace...</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-heading project-heading" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Project coordination <span>//</span> Shared workspace</p>
+        <h1 id="project-name">Team project</h1>
+        <p id="project-description" class="page-description">A shared space to coordinate work and keep conversations moving.</p>
+      </div>
+      <div class="heading-stamp" aria-label="Live relay">
+        <span class="stamp-light" aria-hidden="true"></span>
+        <strong id="member-count">0 online</strong>
+        <small>Live project room</small>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <form id="profile-form" class="panel side-panel">
+          <div class="side-heading"><h2>Your profile</h2><small>Visible to members</small></div>
+          <label for="profile-name">Name</label>
+          <input id="profile-name" maxlength="40" autocomplete="name" placeholder="Your name" required>
+          <label for="profile-role">Role</label>
+          <input id="profile-role" maxlength="60" placeholder="e.g. Project lead" required>
+          <label for="profile-industry">Industry</label>
+          <input id="profile-industry" maxlength="60" placeholder="e.g. Education" required>
+          <label for="profile-team">Team / department</label>
+          <input id="profile-team" maxlength="60" placeholder="Optional">
+          <label for="profile-skills">Skills</label>
+          <input id="profile-skills" maxlength="120" placeholder="e.g. Design, planning">
+          <button type="submit">Save profile</button>
+          <p id="profile-feedback" class="feedback" aria-live="polite"></p>
+        </form>
+
+        <form id="project-form" class="panel side-panel">
+          <div class="side-heading"><h2>Project info</h2><small>Shared</small></div>
+          <label for="project-name-input">Project name</label>
+          <input id="project-name-input" maxlength="80" placeholder="Project name" required>
+          <label for="project-description-input">Description</label>
+          <textarea id="project-description-input" maxlength="240" placeholder="What is this project about?" required></textarea>
+          <button type="submit">Update project</button>
+          <p id="project-feedback" class="feedback" aria-live="polite"></p>
+        </form>
+
+        <section class="panel side-panel" aria-labelledby="task-heading">
+          <div class="section-heading"><h2 id="task-heading">Task list</h2><small id="task-count">0 tasks</small></div>
+          <form id="task-form" class="task-form">
+            <label for="task-title-input">New task</label>
+            <input id="task-title-input" maxlength="120" placeholder="What needs doing?" required>
+            <label for="task-assignee-input">Assign to (optional)</label>
+            <input id="task-assignee-input" maxlength="40" placeholder="Member name">
+            <button type="submit">Add task</button>
+          </form>
+          <ul id="tasks" class="task-list"></ul>
+          <p id="tasks-empty" class="empty-note">No tasks yet.</p>
+          <p id="task-feedback" class="feedback" aria-live="polite"></p>
+        </section>
+
+        <section class="panel side-panel" aria-labelledby="members-heading">
+          <div class="section-heading"><h2 id="members-heading">Online members</h2><small id="member-list-count">0 online</small></div>
+          <ul id="members" class="member-list"></ul>
+          <p id="members-empty" class="empty-note">Save your profile to join the workspace.</p>
+        </section>
+      </aside>
+
+      <section class="room">
+        <section class="panel stream" aria-labelledby="stream-title">
+          <div class="channel-bar">
+            <nav id="channels" class="channel-tabs" aria-label="Project channels"></nav>
+            <form id="channel-form" class="channel-create-form">
+              <input id="channel-name-input" maxlength="24" placeholder="New channel" aria-label="New channel name" required>
+              <button type="submit" class="small-button">Add</button>
+            </form>
+          </div>
+          <div class="stream-heading">
+            <h2 id="stream-title" class="stream-title"># general</h2>
+            <span id="post-count" class="post-count">0 messages</span>
+          </div>
+          <p id="empty-state" class="stream-empty">No messages in this channel.<br>Start the project conversation.</p>
+          <ul id="posts" aria-live="polite"></ul>
+        </section>
+
+        <form id="post-form" class="panel composer">
+          <div class="panel-topline"><span class="panel-index">CHAT</span><span id="composer-channel-label">Send to #general</span></div>
+          <div id="reply-context" class="reply-context" hidden>
+            <span id="reply-context-label"></span>
+            <button id="cancel-reply" type="button" class="cancel-reply" aria-label="Cancel reply">×</button>
+          </div>
+          <label for="content">Message</label>
+          <textarea id="content" maxlength="3000" placeholder="Write a message to the project..." aria-label="Message"></textarea>
+          <div class="composer-actions">
+            <input id="images" class="file-picker" name="images" type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple aria-label="Attach images">
+            <button id="submit-button" type="submit"><span>Send message</span><span class="button-arrow" aria-hidden="true">↗</span></button>
+          </div>
+          <p class="field-note">Optional images // Up to 4, 1 MB each // PNG, JPG, GIF, WEBP</p>
+          <div id="image-preview" class="image-preview" aria-live="polite"></div>
+          <p id="feedback" class="feedback" aria-live="polite"></p>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const connection = document.getElementById("connection");
+    const profileForm = document.getElementById("profile-form");
+    const projectForm = document.getElementById("project-form");
+    const taskForm = document.getElementById("task-form");
+    const channelForm = document.getElementById("channel-form");
+    const form = document.getElementById("post-form");
+    const profileFeedback = document.getElementById("profile-feedback");
+    const projectFeedback = document.getElementById("project-feedback");
+    const taskFeedback = document.getElementById("task-feedback");
+    const profileFields = {
+      name: document.getElementById("profile-name"),
+      role: document.getElementById("profile-role"),
+      industry: document.getElementById("profile-industry"),
+      team: document.getElementById("profile-team"),
+      skills: document.getElementById("profile-skills")
+    };
+    const projectName = document.getElementById("project-name");
+    const projectDescription = document.getElementById("project-description");
+    const projectNameInput = document.getElementById("project-name-input");
+    const projectDescriptionInput = document.getElementById("project-description-input");
+    const channelsElement = document.getElementById("channels");
+    const channelNameInput = document.getElementById("channel-name-input");
+    const streamTitle = document.getElementById("stream-title");
+    const composerChannelLabel = document.getElementById("composer-channel-label");
+    const memberCount = document.getElementById("member-count");
+    const memberListCount = document.getElementById("member-list-count");
+    const membersElement = document.getElementById("members");
+    const membersEmpty = document.getElementById("members-empty");
+    const tasksElement = document.getElementById("tasks");
+    const tasksEmpty = document.getElementById("tasks-empty");
+    const taskTitleInput = document.getElementById("task-title-input");
+    const taskAssigneeInput = document.getElementById("task-assignee-input");
+    const taskCount = document.getElementById("task-count");
+    const contentInput = document.getElementById("content");
+    const imageInput = document.getElementById("images");
+    const submitButton = document.getElementById("submit-button");
+    const feedback = document.getElementById("feedback");
+    const posts = document.getElementById("posts");
+    const emptyState = document.getElementById("empty-state");
+    const postCount = document.getElementById("post-count");
+    const imagePreview = document.getElementById("image-preview");
+    const replyContext = document.getElementById("reply-context");
+    const replyContextLabel = document.getElementById("reply-context-label");
+    const cancelReply = document.getElementById("cancel-reply");
+    const maxImages = 4;
+    const maxImageBytes = 1024 * 1024;
+    const allowedImageTypes = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
+    let selectedImages = [];
+    let previewUrls = [];
+    let activeChannel = "general";
+    let availableChannels = ["general", "planning", "updates"];
+    let taskList = [];
+    let selectedReply = null;
+    let memberProfiles = [];
+    let savedProfile = null;
+
+    try {
+      const storedProfile = JSON.parse(localStorage.getItem("edp-project-profile") || "null");
+      if (storedProfile && typeof storedProfile === "object") {
+        Object.keys(profileFields).forEach((key) => {
+          if (typeof storedProfile[key] === "string") {
+            profileFields[key].value = storedProfile[key];
+          }
+        });
+        savedProfile = storedProfile;
+      }
+    } catch (error) {
+      console.warn("Saved project profile could not be loaded:", error);
+    }
+
+    function showMessage(element, message, state) {
+      element.textContent = message;
+      element.classList.toggle("is-error", state === "error");
+      element.classList.toggle("is-success", state === "success");
+    }
+
+    function showFeedback(message, state) {
+      showMessage(feedback, message, state);
+    }
+
+    function requestAck(eventName, data, callback) {
+      socket.timeout(15000).emit(eventName, data, (timeoutError, result) => {
+        if (timeoutError) {
+          callback({ success: false, error: "The server did not respond. Please try again." });
+          return;
+        }
+        callback(result);
+      });
+    }
+
+    function getProfileFromForm() {
+      return Object.fromEntries(
+        Object.entries(profileFields).map(([key, field]) => [key, field.value.trim()])
+      );
+    }
+
+    function persistProfile(profile) {
+      try {
+        localStorage.setItem("edp-project-profile", JSON.stringify(profile));
+      } catch (error) {
+        console.warn("Project profile could not be saved in this browser:", error);
+      }
+    }
+
+    function renderProject(project) {
+      projectName.textContent = project.name;
+      projectDescription.textContent = project.description;
+      projectNameInput.value = project.name;
+      projectDescriptionInput.value = project.description;
+    }
+
+    function renderChannels() {
+      channelsElement.replaceChildren();
+      availableChannels.forEach((channel) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `channel-button${channel === activeChannel ? " is-active" : ""}`;
+        button.textContent = `# ${channel}`;
+        button.setAttribute("aria-pressed", String(channel === activeChannel));
+        button.addEventListener("click", () => selectChannel(channel));
+        channelsElement.append(button);
+      });
+      streamTitle.textContent = `# ${activeChannel}`;
+      composerChannelLabel.textContent = `Send to #${activeChannel}`;
+    }
+
+    function selectChannel(channel) {
+      if (!availableChannels.includes(channel)) {
+        return;
+      }
+      activeChannel = channel;
+      selectedReply = null;
+      renderReplyContext();
+      renderChannels();
+      posts.replaceChildren();
+      postCount.textContent = "Loading messages";
+      emptyState.hidden = true;
+      socket.emit("channel:join", { channel });
+    }
+
+    function renderMembers() {
+      membersElement.replaceChildren();
+      memberProfiles.forEach((member) => {
+        const item = document.createElement("li");
+        item.className = "member-item";
+        const dot = document.createElement("span");
+        dot.className = "member-dot";
+        dot.setAttribute("aria-hidden", "true");
+        const details = document.createElement("div");
+        const name = document.createElement("p");
+        name.className = "member-name";
+        name.textContent = member.name;
+        const description = document.createElement("p");
+        description.className = "member-details";
+        description.textContent = [member.role, member.industry, member.team].filter(Boolean).join(" · ");
+        details.append(name, description);
+        if (member.skills) {
+          const skills = document.createElement("p");
+          skills.className = "member-details";
+          skills.textContent = `Skills: ${member.skills}`;
+          details.append(skills);
+        }
+        item.append(dot, details);
+        membersElement.append(item);
+      });
+      const count = memberProfiles.length;
+      const countLabel = `${count} ${count === 1 ? "online member" : "online members"}`;
+      memberCount.textContent = `${count} online`;
+      memberListCount.textContent = countLabel;
+      membersEmpty.hidden = count > 0;
+    }
+
+    function renderTasks() {
+      tasksElement.replaceChildren();
+      taskList.forEach((task) => {
+        const item = document.createElement("li");
+        item.className = `task-item${task.completed ? " is-complete" : ""}`;
+
+        const checkbox = document.createElement("input");
+        checkbox.className = "task-toggle";
+        checkbox.type = "checkbox";
+        checkbox.checked = task.completed;
+        checkbox.setAttribute("aria-label", `Mark ${task.title} ${task.completed ? "incomplete" : "complete"}`);
+        checkbox.addEventListener("change", () => {
+          requestAck("task:toggle", { id: task.id }, (result) => {
+            if (!result.success) {
+              showMessage(taskFeedback, result.error, "error");
+              renderTasks();
+            }
+          });
+        });
+
+        const copy = document.createElement("div");
+        copy.className = "task-copy";
+        const title = document.createElement("p");
+        title.className = "task-title";
+        title.textContent = task.title;
+        const meta = document.createElement("p");
+        meta.className = "task-meta";
+        const assignment = task.assignee ? `To ${task.assignee}` : "Unassigned";
+        meta.textContent = `${assignment} · Added by ${task.createdBy}`;
+        copy.append(title, meta);
+        item.append(checkbox, copy);
+        tasksElement.append(item);
+      });
+      taskCount.textContent = `${taskList.length} ${taskList.length === 1 ? "task" : "tasks"}`;
+      tasksEmpty.hidden = taskList.length > 0;
+    }
+
+    function renderReplyContext() {
+      if (!selectedReply) {
+        replyContext.hidden = true;
+        replyContextLabel.textContent = "";
+        return;
+      }
+      replyContext.hidden = false;
+      replyContextLabel.textContent = `Replying to ${selectedReply.profile.name}`;
+    }
+
+    function scrollFeedToBottom() {
+      posts.scrollTop = posts.scrollHeight;
+    }
+
+    function renderImagePreviews() {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      previewUrls = [];
+      imagePreview.replaceChildren();
+
+      selectedImages.forEach((file, index) => {
+        const tile = document.createElement("div");
+        tile.className = "preview-tile";
+
+        const image = document.createElement("img");
+        const url = URL.createObjectURL(file);
+        previewUrls.push(url);
+        image.className = "preview-image";
+        image.src = url;
+        image.alt = file.name;
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "remove-image";
+        removeButton.type = "button";
+        removeButton.textContent = "×";
+        removeButton.setAttribute("aria-label", `Remove ${file.name}`);
+        removeButton.addEventListener("click", () => {
+          selectedImages = selectedImages.filter((_, currentIndex) => currentIndex !== index);
+          renderImagePreviews();
+        });
+
+        tile.append(image, removeButton);
+        imagePreview.append(tile);
+      });
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          if (typeof reader.result !== "string") {
+            reject(new Error(`Unable to read ${file.name}.`));
+            return;
+          }
+          resolve({ type: file.type, dataUrl: reader.result });
+        });
+        reader.addEventListener("error", () => reject(new Error(`Unable to read ${file.name}.`)));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function updatePostCount() {
+      const count = posts.childElementCount;
+      postCount.textContent = `${count} ${count === 1 ? "message" : "messages"}`;
+    }
+
+    function renderPost(post) {
+      const item = document.createElement("li");
+      item.className = "post";
+
+      const meta = document.createElement("div");
+      meta.className = "post-meta";
+
+      const author = document.createElement("p");
+      author.className = "post-author";
+      author.textContent = post.profile.name;
+
+      const time = document.createElement("p");
+      time.className = "post-time";
+      time.textContent = new Date(post.sentAt).toLocaleString();
+
+      const details = document.createElement("p");
+      details.className = "post-details";
+      details.textContent = [post.profile.role, post.profile.industry].filter(Boolean).join(" · ");
+
+      const content = document.createElement("p");
+      content.className = "post-content";
+      content.textContent = post.content;
+
+      meta.append(author, time);
+      item.append(meta, details);
+      if (post.replyTo) {
+        const quote = document.createElement("p");
+        quote.className = "reply-preview";
+        const replyAuthor = document.createElement("strong");
+        replyAuthor.textContent = `${post.replyTo.author}: `;
+        quote.append(replyAuthor, document.createTextNode(post.replyTo.content || "Image attachment"));
+        item.append(quote);
+      }
+      if (post.content) {
+        item.append(content);
+      }
+
+      if (Array.isArray(post.images) && post.images.length > 0) {
+        const imageGrid = document.createElement("div");
+        imageGrid.className = "post-images";
+        post.images.forEach((attachment, index) => {
+          const image = document.createElement("img");
+          image.className = "post-image";
+          image.src = attachment.dataUrl;
+          image.alt = `Image attachment ${index + 1}`;
+          image.loading = "lazy";
+          imageGrid.append(image);
+        });
+        item.append(imageGrid);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "post-actions";
+      const replyButton = document.createElement("button");
+      replyButton.type = "button";
+      replyButton.className = "reply-button";
+      replyButton.textContent = "Reply";
+      replyButton.addEventListener("click", () => {
+        selectedReply = post;
+        renderReplyContext();
+        contentInput.focus();
+      });
+      actions.append(replyButton);
+      item.append(actions);
+
+      posts.append(item);
+      emptyState.hidden = true;
+      updatePostCount();
+      scrollFeedToBottom();
+    }
+
+    socket.on("connect", () => {
+      connection.dataset.state = "online";
+      connection.textContent = "Connected — workspace is live.";
+      if (savedProfile?.name && savedProfile?.role && savedProfile?.industry) {
+        socket.emit("profile:update", savedProfile);
+      }
+    });
+
+    socket.on("disconnect", () => {
+      connection.dataset.state = "offline";
+      connection.textContent = "Disconnected — reconnecting...";
+    });
+
+    socket.on("connect_error", () => {
+      connection.dataset.state = "offline";
+      connection.textContent = "Connection failed — retrying...";
+    });
+
+    socket.on("project:state", (state) => {
+      renderProject(state.project);
+      availableChannels = state.channels;
+      taskList = state.tasks;
+      renderTasks();
+      if (!availableChannels.includes(activeChannel)) {
+        activeChannel = availableChannels[0];
+      }
+      renderChannels();
+      socket.emit("channel:join", { channel: activeChannel });
+    });
+
+    socket.on("project:update", renderProject);
+
+    socket.on("channels:update", (channels) => {
+      availableChannels = channels;
+      renderChannels();
+    });
+
+    socket.on("members:update", (members) => {
+      memberProfiles = members;
+      renderMembers();
+    });
+
+    socket.on("channel:history", ({ channel, posts: history }) => {
+      if (channel !== activeChannel) {
+        return;
+      }
+      posts.replaceChildren();
+      updatePostCount();
+      history.forEach(renderPost);
+      emptyState.hidden = history.length > 0;
+      scrollFeedToBottom();
+    });
+
+    socket.on("post:new", (post) => {
+      if (post.channel === activeChannel) {
+        renderPost(post);
+      }
+    });
+
+    socket.on("task:new", (task) => {
+      taskList.push(task);
+      renderTasks();
+    });
+
+    socket.on("task:update", (updatedTask) => {
+      taskList = taskList.map((task) => task.id === updatedTask.id ? updatedTask : task);
+      renderTasks();
+    });
+
+    profileForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const profile = getProfileFromForm();
+      showMessage(profileFeedback, "", "");
+      requestAck("profile:update", profile, (result) => {
+        if (!result.success) {
+          showMessage(profileFeedback, result.error, "error");
+          return;
+        }
+        savedProfile = result.profile;
+        persistProfile(savedProfile);
+        Object.entries(profileFields).forEach(([key, field]) => {
+          field.value = savedProfile[key];
+        });
+        showMessage(profileFeedback, "Profile saved and shared.", "success");
+      });
+    });
+
+    projectForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      requestAck("project:update", {
+        name: projectNameInput.value,
+        description: projectDescriptionInput.value
+      }, (result) => {
+        showMessage(projectFeedback, result.success ? "Project details updated." : result.error, result.success ? "success" : "error");
+      });
+    });
+
+    taskForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      requestAck("task:create", {
+        title: taskTitleInput.value,
+        assignee: taskAssigneeInput.value
+      }, (result) => {
+        if (!result.success) {
+          showMessage(taskFeedback, result.error, "error");
+          return;
+        }
+        taskTitleInput.value = "";
+        taskAssigneeInput.value = "";
+        showMessage(taskFeedback, "Task added.", "success");
+      });
+    });
+
+    channelForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      requestAck("channel:create", { name: channelNameInput.value }, (result) => {
+        if (!result.success) {
+          showFeedback(result.error, "error");
+          return;
+        }
+        channelNameInput.value = "";
+        selectChannel(result.channel);
+      });
+    });
+
+    cancelReply.addEventListener("click", () => {
+      selectedReply = null;
+      renderReplyContext();
+    });
+
+    imageInput.addEventListener("change", () => {
+      const newFiles = Array.from(imageInput.files || []);
+      imageInput.value = "";
+
+      if (selectedImages.length + newFiles.length > maxImages) {
+        showFeedback(`You can attach up to ${maxImages} images per post.`, "error");
+        return;
+      }
+
+      const invalidFile = newFiles.find((file) =>
+        !allowedImageTypes.has(file.type) || file.size === 0 || file.size > maxImageBytes
+      );
+      if (invalidFile) {
+        showFeedback(`${invalidFile.name} must be a PNG, JPG, GIF, or WEBP image under 1 MB.`, "error");
+        return;
+      }
+
+      selectedImages.push(...newFiles);
+      renderImagePreviews();
+      showFeedback("", "");
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      showFeedback("", "");
+
+      if (!socket.connected) {
+        showFeedback("Not connected. Please wait and try again.", "error");
+        return;
+      }
+
+      if (!savedProfile?.name || !savedProfile?.role || !savedProfile?.industry) {
+        showFeedback("Save your name, role, and industry in your profile first.", "error");
+        return;
+      }
+
+      const content = contentInput.value.trim();
+      if (!content && selectedImages.length === 0) {
+        showFeedback("Add a message or at least one image.", "error");
+        return;
+      }
+
+      submitButton.disabled = true;
+      try {
+        const images = await Promise.all(selectedImages.map(fileToDataUrl));
+        socket.timeout(15000).emit("post:create", {
+          content,
+          images,
+          channel: activeChannel,
+          replyTo: selectedReply ? { id: selectedReply.id } : null
+        }, (timeoutError, result) => {
+          submitButton.disabled = false;
+          if (timeoutError) {
+            showFeedback("The server did not respond. Please try again.", "error");
+            return;
+          }
+          if (!result.success) {
+            showFeedback(result.error, "error");
+            return;
+          }
+
+          contentInput.value = "";
+          selectedImages = [];
+          selectedReply = null;
+          renderReplyContext();
+          renderImagePreviews();
+          showFeedback("Your post was published.", "success");
+        });
+      } catch (error) {
+        submitButton.disabled = false;
+        showFeedback(error.message, "error");
+      }
+    });
+  </script>
+</body>
+</html>
